@@ -16,9 +16,12 @@ public class WorkWithFile {
         MarketData marketData = new MarketData();
 
         readFromFile(fromFileName, (line) -> {
-            String[] lineData = line.split(",");
-            String type = lineData[0].toLowerCase().trim();
-            int value = Integer.parseInt(lineData[1].trim());
+            String[] tokens = line.split(COMMA);
+            if (line.isEmpty() || tokens.length == 2) {
+                return;
+            }
+            String type = tokens[0].toLowerCase().trim();
+            int value = Integer.parseInt(tokens[1].trim());
             if (type.equals(SUPPLY_LABEL)) {
                 marketData.addSupplyTotal(value);
             } else if (type.equals(BUY_LABEL)) {
@@ -33,24 +36,24 @@ public class WorkWithFile {
     }
 
     private void readFromFile(String fileName, LineProcessor processor) {
+        String line = "";
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
             while ((line = reader.readLine()) != null) {
                 processor.execute(line);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Can't read data from the file " + fileName, e);
+            throw new RuntimeException("Malformed line in " + fileName + ": '" + line + "'" + fileName, e);
         }
     }
 
     private String getStatisticString(MarketData data) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
-                .append(SUPPLY_LABEL).append(',').append(data.getSupplyTotal())
+                .append(SUPPLY_LABEL).append(COMMA).append(data.getSupplyTotal())
                 .append(LINE_SEPARATOR)
-                .append(BUY_LABEL).append(',').append(data.getBuyTotal())
+                .append(BUY_LABEL).append(COMMA).append(data.getBuyTotal())
                 .append(LINE_SEPARATOR)
-                .append(RESULT_LABEL).append(',').append(data.getResult());
+                .append(RESULT_LABEL).append(COMMA).append(data.getResult());
         return stringBuilder.toString();
     }
 
