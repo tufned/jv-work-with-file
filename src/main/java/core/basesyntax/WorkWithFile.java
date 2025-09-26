@@ -17,7 +17,7 @@ public class WorkWithFile {
 
         readFromFile(fromFileName, (line) -> {
             String[] tokens = line.split(COMMA);
-            if (line.isEmpty() || tokens.length == 2) {
+            if (line.isEmpty() || tokens.length != 2) {
                 return;
             }
             String type = tokens[0].toLowerCase().trim();
@@ -42,7 +42,8 @@ public class WorkWithFile {
                 processor.execute(line);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Malformed line in " + fileName + ": '" + line + "'" + fileName, e);
+            String errStr = "Malformed line in " + fileName + ": '" + line + "'" + fileName;
+            throw new RuntimeException(errStr, e);
         }
     }
 
